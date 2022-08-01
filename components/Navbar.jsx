@@ -26,16 +26,19 @@ const Navbar = () => {
           <p className="logo-items">Autumn Sale</p>
         </Link> */}
         </p>
-        <button
-          type="button"
-          className="cart-icon"
-          onClick={() => {
-            setShowCart(true);
-          }}
-        >
-          <AiOutlineShopping size={35} />
-          <span className="cart-item-qty">{totalQuantities}</span>
-        </button>
+        <div className="right-nav">
+          <button className="login">Login</button>
+          <button
+            type="button"
+            className="cart-icon"
+            onClick={() => {
+              setShowCart(true);
+            }}
+          >
+            <AiOutlineShopping size={35} />
+            <span className="cart-item-qty">{totalQuantities}</span>
+          </button>
+        </div>
       </div>
 
       {showCart && <Cart />}

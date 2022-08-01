@@ -11,7 +11,7 @@ import {
 import { TiDeleteOutline } from "react-icons/ti";
 import toast from "react-hot-toast";
 import { urlFor } from "../lib/client";
-
+import getStripe from "../lib/getStripe";
 const Cart = () => {
   const {
     showCart,
@@ -22,8 +22,31 @@ const Cart = () => {
     incQty,
     decQty,
     qty,
+    toggleCartItemQuantity,
+    onRemove,
   } = useStateContext();
   const cartRef = useRef();
+
+  const handleCheckout = async () => {
+    const stripe = await getStripe();
+
+    const response = await fetch("/api/stripe", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(cartItems),
+    });
+
+    if (response.statusCode === 500) return;
+
+    const data = await response.json();
+
+    toast.loading("redirecting to stripe...");
+
+    stripe.redirectToCheckout({ sessionId: data.id });
+  };
+
   return (
     <div className="cart-wrapper" ref={cartRef}>
       <div className="cart-container">
@@ -70,16 +93,32 @@ const Cart = () => {
                   <div className="flex bottom">
                     <div>
                       <p className="quantity-desc">
-                        <span className="minus" onClick="">
+                        <span
+                          className="minus"
+                          onClick={() =>
+                            toggleCartItemQuantity(item._id, "dec")
+                          }
+                        >
                           <AiOutlineMinus />
                         </span>
-                        <span className="num">0</span>
-                        <span className="plus" onClick="">
+                        <span className="num">{item.quantity}</span>
+                        <span
+                          className="plus"
+                          onClick={() =>
+                            toggleCartItemQuantity(item._id, "inc")
+                          }
+                        >
                           <AiOutlinePlus />
                         </span>
                       </p>
                     </div>
-                    <button type="button" class="remove-item" onClick="">
+                    <button
+                      type="button"
+                      className="remove-item"
+                      onClick={() => {
+                        onRemove(item);
+                      }}
+                    >
                       <TiDeleteOutline size={25} />
                     </button>
                   </div>
@@ -87,6 +126,19 @@ const Cart = () => {
               </div>
             ))}
         </div>
+        {cartItems.length >= 1 && (
+          <div className="cart-bottom">
+            <div className="total">
+              <h3>Subtotal:</h3>
+              <h3>${totalPrice.toFixed(2)}</h3>
+            </div>
+            <div className="btn-container">
+              <button className="btn" type="button" onClick={handleCheckout}>
+                CHECKOUT
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -776,3 +776,21 @@ span.text-red {
   font-weight: 600;
   /* font-family: "Roboto Mono", monospace; */
 }
+
+.right-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5em;
+}
+
+.login {
+  border: none;
+  background: #088f8f;
+  color: white;
+  font-weight: 600;
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
